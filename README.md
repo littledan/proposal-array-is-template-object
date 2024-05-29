@@ -1,7 +1,7 @@
 # Array.isTemplateObject explainer (stage [2](https://tc39.es/process-document/))
 
 Authors: [@mikesamuel](https://github.com/mikesamuel), [@koto](https://github.com/koto)
-Champion: [@koto](https://github.com/koto)
+Champion: [@littledan](https://github.com/littledan)
 Reviewers: [@erights](https://github.com/erights), [@jridgewell](https://github.com/jridgewell)
 
 Provides a way for template tag functions to tell whether they were
@@ -38,7 +38,7 @@ is not the case.
 
 ```js
 function (trustedStrings, ...untrustedArguments) {
-  if (Array.isTemplateObject(trustedStrings)
+  if (isTemplateObject(trustedStrings))
       // instanceof provides a same-Realm guarantee for early frozen objects.
       && trustedStrings instanceof Array) {
     // Proceed knowing that trustedStrings come from
@@ -49,15 +49,15 @@ function (trustedStrings, ...untrustedArguments) {
 }
 ```
 
-This assumes that an attacker cannot get a string to `eval` or `new Function` as in
+This assumes that an attacker cannot get a string to `eval` or `new Function`, e.g., due to the use of CSP, as in
 
 ```js
 const attackerControlledString = '((x) => x)`evil string`';
 
 // Naive code
-let x = eval(attackerControlledString)
+let x = eval(attackerControlledString[0])
 
-console.log(Array.isTemplateObject(x));
+console.log(isTemplateObject(x));
 ```
 
 Many other security assumptions break if an attacker can execute arbitrary code,
@@ -75,7 +75,6 @@ operation.
 ```js
 const { Array, TypeError } = globalThis;
 const { createPolicy } = trustedTypes;
-const { isTemplateObject } = Array;
 const { error: consoleErr } = console;
 
 /**
@@ -174,6 +173,8 @@ You can browse the [ecmarkup output](https://tc39.es/proposal-array-is-template-
 or browse the [source](https://github.com/tc39/proposal-array-is-template-object/blob/master/spec.emu).
 
 ## Polyfill
+
+This proposal is impossible to polyfill 
 
 An es-shim API compatible polyfill available at [![npm](https://img.shields.io/npm/v/is-template-object.svg)](https://www.npmjs.com/package/is-template-object).
 
